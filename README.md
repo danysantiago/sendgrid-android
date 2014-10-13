@@ -51,7 +51,7 @@ dependencies {
     compile project(':sendgrid-android')
 }
 ```
-Because the Library uses an updated version of [Apache's Http Library](https://hc.apache.org/httpcomponents-client-4.3.x/android-port.html) we need to the following packaking option so the APK gets built correctly without libraries conflicting.
+Because the Library uses an updated version of [Apache's Http Library](https://hc.apache.org/httpcomponents-client-4.3.x/android-port.html) we need to add the following packaging options so the APK gets built correctly, without libraries conflicting.
 ```groovy
 ...
 android {
