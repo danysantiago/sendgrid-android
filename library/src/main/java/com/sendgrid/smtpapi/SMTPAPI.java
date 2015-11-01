@@ -1,5 +1,7 @@
 package com.sendgrid.smtpapi;
 
+import android.os.Build;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -8,6 +10,8 @@ import java.util.ArrayList;
 import java.util.Map;
 
 public class SMTPAPI {
+
+  private static final String VERSION = "1.2.0";
 
   private JSONObject header = new JSONObject();
 
@@ -19,6 +23,10 @@ public class SMTPAPI {
     this.header = header;
   }
 
+  public String getVersion() {
+    return VERSION;
+  }
+
   private static String[] toArray(JSONArray json) throws JSONException {
     ArrayList<String> parse = new ArrayList<String>();
     for (int i = 0; i < json.length(); i++) {
@@ -27,31 +35,28 @@ public class SMTPAPI {
     return parse.toArray(new String[parse.size()]);
   }
 
-  private static JSONArray fromArray(String[] array) {
-    JSONArray jsonArr = new JSONArray();
-    for (int i = 0; i < array.length; i++) {
-      jsonArr.put(array[i]);
-    }
-    return jsonArr;
-  }
-
   public SMTPAPI addTo(String to) throws JSONException {
     if (!this.header.has("to")) {
-			this.header.put("to", new JSONArray());
-		}
-		this.header.accumulate("to", to);
+      this.header.put("to", new JSONArray());
+    }
+    this.header.accumulate("to", to);
     return this;
   }
 
   public SMTPAPI addTos(String[] to) throws JSONException {
-    for (int i = 0; i < to.length; i ++) {
+    for(int i = 0; i < to.length; i ++) {
       addTo(to[i]);
     }
     return this;
   }
 
   public SMTPAPI setTos(String[] to) throws JSONException {
-    this.header.put("to",fromArray(to));
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+      this.header.put("to", new JSONArray(to));
+    } else {
+      this.header.remove("to");
+      addTos(to);
+    }
     return this;
   }
 
@@ -63,10 +68,10 @@ public class SMTPAPI {
     if (this.header.isNull("sub")) {
       this.header.put("sub", new JSONObject());
     }
-		JSONObject subs = this.header.getJSONObject("sub");
-		if (!subs.has(key)) {
-			subs.put(key, new JSONArray());
-		}
+    JSONObject subs = this.header.getJSONObject("sub");
+    if (!subs.has(key)) {
+      subs.put(key, new JSONArray());
+    }
     subs.accumulate(key, val);
     return this;
   }
@@ -111,9 +116,9 @@ public class SMTPAPI {
 
   public SMTPAPI addCategory(String val) throws JSONException {
     if (!this.header.has("category")) {
-			this.header.put("category", new JSONArray());
-		}
-		this.header.accumulate("category", val);
+      this.header.put("category", new JSONArray());
+    }
+    this.header.accumulate("category", val);
     return this;
   }
 
@@ -188,15 +193,49 @@ public class SMTPAPI {
     return this.header.getJSONObject("filters");
   }
 
+  public SMTPAPI setASMGroupId(int val) throws JSONException{
+    this.header.put("asm_group_id", val);
+    return this;
+  }
+
+  public Integer getASMGroupId() throws JSONException{
+    return this.header.has("asm_group_id") ? this.header.optInt("asm_group_id") : null;
+  }
+
+  public SMTPAPI setSendAt(int sendAt) throws JSONException {
+    this.header.put("send_at", sendAt);
+    return this;
+  }
+
+  public int getSendAt() throws JSONException {
+    return this.header.getInt("send_at");
+
+  }
+
+  // convert from string to code point array
+  private int[] toCodePointArray(String input) {
+    int len = input.length();
+    int[] codePointArray = new int[input.codePointCount(0, len)];
+    for (int i = 0, j = 0; i < len; i = input.offsetByCodePoints(i, 1)) {
+      codePointArray[j++] = input.codePointAt(i);
+    }
+    return codePointArray;
+  }
+
   private String escapeUnicode(String input) {
     StringBuilder sb = new StringBuilder();
-    int len = input.length();
+    int[] codePointArray = toCodePointArray(input);
+    int len = codePointArray.length;
     for (int i = 0; i < len; i++) {
-      int code = Character.codePointAt(input, i);
-      if (code > 127) {
-        sb.append(String.format("\\u%x", code));
+      if (codePointArray[i] > 65535) {
+        // surrogate pair
+        int hi = (codePointArray[i] - 0x10000) / 0x400 + 0xD800;
+        int lo = (codePointArray[i] - 0x10000) % 0x400 + 0xDC00;
+        sb.append(String.format("\\u%04x\\u%04x", hi, lo));
+      } else if (codePointArray[i] > 127) {
+        sb.append(String.format("\\u%04x",codePointArray[i]));
       } else {
-        sb.append(String.format("%c", code));
+        sb.append(String.format("%c", codePointArray[i]));
       }
     }
     return sb.toString();
@@ -204,5 +243,9 @@ public class SMTPAPI {
 
   public String jsonString() {
     return escapeUnicode(this.header.toString());
+  }
+
+  public String rawJsonString() {
+    return this.header.toString();
   }
 }

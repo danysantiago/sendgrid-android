@@ -41,7 +41,22 @@ protected Void doInBackground(Void... params) {
 }
 ```
 
-# Installation
+# Setup
+
+#### Gradle
+
+`compile 'com.github.danysantiago:sendgrid-android:1.0.0'`
+
+#### Maven
+```
+<dependency>
+    <groupId>com.github.danysantiago</groupId>
+    <artifactId>sendgrid-android</artifactId>
+    <version>1.0.0</version>
+</dependency>
+```
+
+#### Download
 
 Download this repository and add the [Android Library Module](https://github.comysantiago/sendgrid-android/tree/master/sendgrid-android) to your project. Then add the dependency on your gradle file:
 ```groovy

@@ -1,1 +1,1 @@
-include ':app', ':sendgrid-android'
+include ':sample', ':library'
