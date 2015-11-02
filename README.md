@@ -45,20 +45,20 @@ protected Void doInBackground(Void... params) {
 
 #### Gradle
 
-`compile 'com.github.danysantiago:sendgrid-android:1.0.0'`
+`compile 'com.github.danysantiago:sendgrid-android:1'`
 
 #### Maven
 ```
 <dependency>
     <groupId>com.github.danysantiago</groupId>
     <artifactId>sendgrid-android</artifactId>
-    <version>1.0.0</version>
+    <version>1</version>
 </dependency>
 ```
 
 #### Download
 
-Download this repository and add the [Android Library Module](https://github.comysantiago/sendgrid-android/tree/master/sendgrid-android) to your project. Then add the dependency on your gradle file:
+Download this repository and add the [Android Library Module](https://github.com/danysantiago/sendgrid-android/tree/master/library) to your project. Then add the dependency on your gradle file:
 ```groovy
 ...
 dependencies {
@@ -66,7 +66,10 @@ dependencies {
     compile project(':sendgrid-android')
 }
 ```
-Because the Library uses an updated version of [Apache's Http Library](https://hc.apache.org/httpcomponents-client-4.3.x/android-port.html) we need to add the following packaging options so the APK gets built correctly, without libraries conflicting.
+
+### Additional Steps:
+
+Because the Library uses an updated version of [Apache's Http Library](https://hc.apache.org/httpcomponents-client-4.3.x/android-port.html) we need to add the following packaging options so the APK gets built correctly, without libraries conflicting. This goes into your app's build.gradle.
 ```groovy
 ...
 android {
