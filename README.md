@@ -13,27 +13,23 @@ protected Void doInBackground(Void... params) {
 
     // Get values from edit text to compose email
     // TODO: Validate edit texts
-    email.addTo(toEditText.getText().toString());
-    email.setFrom(fromEditText.getText().toString());
-    email.setSubject(subjectEditText.getText().toString());
-    email.setText(msgEditText.getText().toString());
+    email.addTo(mTo);
+    email.setFrom(mFrom);
+    email.setSubject(mSubject);
+    email.setText(mText);
 
     // Attach image
-    if (selectedImageURI != null) {
-      email.addAttachment(attachmentName, getContentResolver().openInputStream(selectedImageURI));
+    if (mUri != null) {
+      email.addAttachment(mAttachmentName, mAppContext.getContentResolver().openInputStream(mUri));
     }
 
     // Send email, execute http request
     SendGrid.Response response = sendgrid.send(email);
-    msgResponse = response.getMessage();
+    mMsgResponse = response.getMessage();
 
-    Log.d("SendAppExample", msgResponse);
+    Log.d("SendAppExample", mMsgResponse);
 
-  } catch (SendGridException e) {
-    Log.e("SendAppExample", e.toString());
-  } catch (JSONException e) {
-    Log.e("SendAppExample", e.toString());
-  } catch (IOException e) {
+  } catch (SendGridException | IOException e) {
     Log.e("SendAppExample", e.toString());
   }
 
@@ -81,7 +77,7 @@ android {
 }
 ```
 
-# Exmaple App
+# Example App
 
 This repository contains a full demo app to play with, currently supporting only image attachments.
 
