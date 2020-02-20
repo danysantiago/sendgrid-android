@@ -1,5 +1,7 @@
 # sendgrid-android
 
+**Deprecated and unmaintained. Please use an alternative.**
+
 This Android module allows you to quickly and easily send emails through SendGrid using Java in Android. It is basically a modified pull from [SendGrid's Java Library](https://github.com/sendgrid/sendgrid-java), slightly modified to use Android's Http Library.
 
 ```java
